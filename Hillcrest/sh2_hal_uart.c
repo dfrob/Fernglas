@@ -22,7 +22,9 @@
  * @brief SH2 HAL Implementation for BNO080, via UART on STM32F411re Nucleo board
  *        with FreeRTOS.
  */
+#include "sensor_app.h"
 
+#ifdef SENSOR_APP
 
 #include <string.h>
 
@@ -718,4 +720,5 @@ static uint32_t rfc1662Encode(uint8_t *buf, uint32_t bufLen,
 error:
     return 0;
 }
+#endif // SENSOR_APP
 

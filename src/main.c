@@ -44,15 +44,25 @@
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include "cmsis_os.h"
+//#include "gpio.h"
+#include "usart.h"
 
 /* USER CODE BEGIN Includes */
 #include "sensor_app.h"
 #include "console.h"
 #include "dbg.h"
-
-extern void sh2_hal_init(void);
+#include "xprintf.h"
+#include "service.h"
 
 /* USER CODE END Includes */
+
+void uart_putc(char c){
+  HAL_UART_Transmit(&huart1, (uint8_t*)&c, 1, 0xFFFF);
+}
+void uart_getc(char c){
+  HAL_UART_Receive(&huart1, (uint8_t*)&c, 1, 0xFFFF);
+}
+
 
 /* Private variables ---------------------------------------------------------*/
 
@@ -84,6 +94,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	xdev_out(uart_putc);
+	xdev_in(uart_getc);
 
   /* USER CODE END 1 */
 
@@ -98,6 +110,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
+  MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
   console_init();
@@ -122,15 +135,21 @@ int main(void)
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1024);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
+  /* definition and creation of ServiceTask */
+  osThreadDef(sevTask, ServiceTask, osPriorityNormal, 0, 1024);
+  defaultTaskHandle = osThreadCreate(osThread(sevTask), NULL);
+
+  xprintf("\nSTART\n");
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
-  sh2_hal_init();
+  // sh2_hal_init(); // DF*
 
-  osThreadDef(demoTask, demoTaskStart, osPriorityNormal, 0, 1024);
-  demoTaskHandle = osThreadCreate(osThread(demoTask), NULL);
-  if (demoTaskHandle == NULL) {
-	  printf("Failed to create demo task.\n");
-  }
+//  osThreadDef(demoTask, demoTaskStart, osPriorityNormal, 0, 1024);
+//  demoTaskHandle = osThreadCreate(osThread(demoTask), NULL);
+//  if (demoTaskHandle == NULL) {
+//	  printf("Failed to create demo task.\n"); // DF*
+//  }
 
   /* USER CODE END RTOS_THREADS */
 

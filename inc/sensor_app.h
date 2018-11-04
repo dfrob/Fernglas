@@ -25,7 +25,7 @@
 // Nur eine der folgenden Defines ist erlaubt
 
 // #define RVC_MODE__APP
-#define SENSOR_APP
+// #define SENSOR_APP
 // #define SENSOR_APP_RVC
 
 void demoTaskStart(const void * params);
